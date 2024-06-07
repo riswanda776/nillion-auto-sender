@@ -17,7 +17,7 @@ Before running the project, ensure you have faucet in your wallet and the follow
 
    ```bash
    git clone https://github.com/riswanda776/nillion-auto-sender.git
-   cd nillion-auto-sender```
+   cd nillion-auto-sender
    
 2. **Install Dependencies**
 
