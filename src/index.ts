@@ -9,19 +9,32 @@ import {
 } from '@cosmjs/stargate'
   ; (async () => {
     dotenv.config();
-    const wallet = await initWallet()
+    const wallets = await initWallets()
     while (true) {
+      for (const wallet of wallets) {      
       await sendTransaction(wallet);
-      console.log('Sleeping for 30 seconds...');
-      await sleep(30000);
+      console.log('Sleeping for 15 seconds...');
+      await sleep(15000);
+      }
     }
   })()
+  
 
-async function initWallet(): Promise<OfflineSigner> {
-  const mnemonic = process.env.MNEMONIC ?? "";
-  const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix: "nillion" });
+  function getMnemonicsFromEnv(): string[] {
+    return Object.keys(process.env)
+      .filter(key => key.startsWith('MNEMONIC'))
+      .map(key => process.env[key] ?? "")
+      .filter(mnemonic => mnemonic !== "");
+  }
 
-  return wallet
+async function initWallets(): Promise<OfflineSigner[]> {
+  const mnemonics = getMnemonicsFromEnv();
+  
+  const wallets = await Promise.all(
+    mnemonics.map(mnemonic => DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix: "nillion" }))
+  );
+
+  return wallets;
 }
 
 async function createReceiveAddress(): Promise<string> {
